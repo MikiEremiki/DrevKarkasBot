@@ -1,0 +1,5 @@
+credentials.json
+token.json
+settings.py
+venv/*
+.idea/*
