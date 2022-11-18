@@ -3,3 +3,4 @@ token.json
 settings.py
 venv/*
 .idea/*
+__pycache__/*

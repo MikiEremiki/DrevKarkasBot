@@ -12,7 +12,7 @@ def echo(update: Update, context: CallbackContext):
 
 
 def report(update: Update, context: CallbackContext):
-    list_for_report = googlesheets.main()
+    list_for_report = googlesheets.balance_report()
 
     text = f'#БалансСредств На текущий момент\n'
     for i in range(len(list_for_report[0])):

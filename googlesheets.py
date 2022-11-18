@@ -1,46 +1,23 @@
-from __future__ import print_function
-
-import os.path
-
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 from settings import LIST_NAME_FOR_REPORT, RANGE_NAME, SPREADSHEET_ID
 
-# If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 
-def main():
-    """Shows basic usage of the Sheets API.
-    Print values from a sample spreadsheet.
-    """
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+def get_service_sacc(scopes):
+    credentials = service_account.Credentials.from_service_account_file(
+        'credentials.json', scopes=SCOPES)
+    
+    return build('sheets', 'v4', credentials=credentials)
 
+
+def balance_report():
     try:
-        service = build('sheets', 'v4', credentials=creds)
-
         # Call the Sheets API
-        sheet = service.spreadsheets()
+        sheet = get_service_sacc(SCOPES).spreadsheets()
         result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                                     range=RANGE_NAME).execute()
         values = result.get('values', [])
@@ -51,11 +28,10 @@ def main():
         list_for_report = [LIST_NAME_FOR_REPORT, []]
         for name in list_for_report[0]:
             list_for_report[1].append(values[1][values[0].index(name)])
-        # print(list_for_report)
         return list_for_report
     except HttpError as err:
         print(err)
 
 
 if __name__ == '__main__':
-    main()
+    balance_report()
