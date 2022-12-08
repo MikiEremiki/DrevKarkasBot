@@ -68,7 +68,7 @@ def balance_of_warehouse_report():
         column_cursor = values[3].index('Цена пластин')
         report['Сейчас']['Пластины'] = f'{values[6][column_cursor]}'.replace(u'\xa0', u' ')
         report['Прогноз']['Пластины'] = f'{values[7][column_cursor]}'.replace(u'\xa0', u' ')
-        print(report)
+
         return report
 
     except HttpError as err:

@@ -14,8 +14,8 @@ def bot():
     jq = updater.job_queue
 
     dp.add_handler(CommandHandler('echo', echo))
-    dp.add_handler(CommandHandler('Отчет по балансу', report_of_balances))
-    dp.add_handler(CommandHandler('Отчет по складу', report_of_warehouse))
+    dp.add_handler(CommandHandler('report_of_balances', report_of_balances))
+    dp.add_handler(CommandHandler('report_of_warehouse', report_of_warehouse))
 
     jq.run_daily(notify_assignees_morning, time(9, 00, 00, tzinfo=timezone('Europe/Moscow')))
     jq.run_daily(notify_assignees_evening, time(18, 00, 00, tzinfo=timezone('Europe/Moscow')))
