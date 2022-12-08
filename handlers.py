@@ -6,19 +6,40 @@ import googlesheets
 from utilites import delete_message, save_message_for_delete
 
 
-def report(update: Update, context: CallbackContext):
+def report_of_balances(update: Update, context: CallbackContext):
     if update.effective_chat.id not in [CHAT_ID_SUPPLY, CHAT_ID_MIKIEREMIKI]:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text='У вас нет прав для просмотра данной информации')
     else:
-        list_for_report = googlesheets.balance_report()
+        report = googlesheets.balance_of_accountable_funds_report()
 
         text = f'#БалансСредств На текущий момент\n'
-        for i in range(len(list_for_report[0])):
-            text += f'{list_for_report[0][i]}: {list_for_report[1][i]}руб\n'
+        for i in range(len(report[0])):
+            text += f'{report[0][i]}: {report[1][i]}руб\n'
 
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=text)
+
+
+def report_of_warehouse(update: Update, context: CallbackContext):
+    if update.effective_chat.id not in [CHAT_ID_FACTORY, CHAT_ID_MIKIEREMIKI]:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text='У вас нет прав для просмотра данной информации')
+    else:
+        report = googlesheets.balance_of_warehouse_report()
+
+        text = f'#БалансСклада\n'
+        for key_1, item in report.items():
+            text += f'\n*{key_1} ({item["Дата"]}):*\n'
+            text += f'Доска:\n'
+            for key_2, value in item['Доска'].items():
+                text += f'{key_2}: {value}\n'
+            text += f'\nПластины:\n'
+            text += f'{item["Пластины"]}\n'
+
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=text,
+                                 parse_mode=constants.PARSEMODE_MARKDOWN)
 
 
 def notify_assignees_morning(context: CallbackContext):
