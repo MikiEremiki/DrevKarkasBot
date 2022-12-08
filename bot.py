@@ -5,7 +5,8 @@ from telegram import constants, Update
 from telegram.ext import Updater, CallbackContext, CommandHandler
 
 from settings import API_TOKEN
-from handlers import echo, notify_assignees_evening, notify_assignees_morning, report
+from handlers import notify_assignees_evening, notify_assignees_morning, report
+from utilites import echo
 
 
 def bot():
