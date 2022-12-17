@@ -2,7 +2,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from settings import RANGE_NAME, SPREADSHEET_ID
+from settings import RANGE_NAME, SPREADSHEET_ID, PATH_LIST_NAME_FOR_REPORT
 from utilites import get_list_items_in_file
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
@@ -30,7 +30,7 @@ def balance_of_accountable_funds_report():
             print('No data found.')
             return
 
-        list_name_for_report = get_list_items_in_file()
+        list_name_for_report = get_list_items_in_file(PATH_LIST_NAME_FOR_REPORT)
 
         list_for_report = [list_name_for_report, []]
         for name in list_for_report[0]:
