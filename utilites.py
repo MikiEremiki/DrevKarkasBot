@@ -1,8 +1,8 @@
 from telegram import Update
 from telegram.ext import CallbackContext
 import telegram.error
-from telegram import Update
-from telegram.ext import CallbackContext
+
+import os
 
 
 def delete_message(context: CallbackContext, chat_id, path):
@@ -30,12 +30,14 @@ def echo(update: Update, context: CallbackContext):
 
 
 def write_list_of_items_in_file(list_of_names, path):
+    check_path('data')
     with open(path, 'w', encoding='utf-8') as f:
         for item in list_of_names:
             f.write(str(item) + '\n')
 
 
 def read_list_of_items_in_file(path):
+    check_path('data')
     with open(path, mode='r', encoding='utf-8') as f:
         list_items = []
         for line in f:
@@ -57,3 +59,10 @@ def delete_message_for_job_in_callback(context: CallbackContext):
         chat_id=context.job.context['chat_id'],
         message_id=context.job.context['message_id']
     )
+
+
+def check_path(path):
+    current_path = os.getcwd()
+    path = os.path.join(current_path, path)
+    if not os.path.exists(path):
+        os.makedirs(path)
