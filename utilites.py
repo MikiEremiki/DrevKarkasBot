@@ -2,8 +2,6 @@ import telegram.error
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from settings import CHAT_ID_FACTORY
-
 
 def delete_message(context: CallbackContext, chat_id, path):
     list_message_id_for_delete = get_list_items_in_file(path)
