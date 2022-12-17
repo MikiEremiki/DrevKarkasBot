@@ -19,6 +19,6 @@ def save_message_for_delete(message_id):
 
 
 def echo(update: Update, context: CallbackContext):
-    text = 'ECHO'
+    text = f'chat.id: {update.effective_chat.id}'
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=text)
