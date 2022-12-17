@@ -1,3 +1,5 @@
+from telegram import Update
+from telegram.ext import CallbackContext
 import telegram.error
 from telegram import Update
 from telegram.ext import CallbackContext
