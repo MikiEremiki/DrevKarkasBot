@@ -1,21 +1,26 @@
+import telegram.error
 from telegram import Update
 from telegram.ext import CallbackContext
 
 from settings import CHAT_ID_FACTORY
 
 
-list_message_id_for_delete = []
-
-
-def delete_message(context: CallbackContext):
+def delete_message(context: CallbackContext, chat_id, path):
+    list_message_id_for_delete = get_list_items_in_file(path)
     if len(list_message_id_for_delete) == 2:
-        context.bot.delete_message(chat_id=CHAT_ID_FACTORY,
-                                   message_id=list_message_id_for_delete[0])
+        try:
+            context.bot.delete_message(chat_id=chat_id,
+                                       message_id=int(list_message_id_for_delete[0]))
+        except telegram.error.BadRequest:
+            print('Сообщение уже удалено')
         list_message_id_for_delete.pop(0)
+        write_list_of_items_in_file(list_message_id_for_delete, path)
 
 
-def save_message_for_delete(message_id):
+def save_message_for_delete(message_id, path):
+    list_message_id_for_delete = get_list_items_in_file(path)
     list_message_id_for_delete.append(message_id)
+    write_list_of_items_in_file(list_message_id_for_delete, path)
 
 
 def echo(update: Update, context: CallbackContext):
