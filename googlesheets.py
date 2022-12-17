@@ -93,7 +93,3 @@ def get_list_of_all_names_from_sheet():
         return values[0][first_index:last_index + 1]
     except HttpError as err:
         print(err)
-
-
-if __name__ == '__main__':
-    balance_of_warehouse_report()
