@@ -3,7 +3,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 from settings import RANGE_NAME, SPREADSHEET_ID
-from utilites import get_list_chosen_name_for_report
+from utilites import get_list_items_in_file
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
@@ -30,7 +30,7 @@ def balance_of_accountable_funds_report():
             print('No data found.')
             return
 
-        list_name_for_report = get_list_chosen_name_for_report()
+        list_name_for_report = get_list_items_in_file()
 
         list_for_report = [list_name_for_report, []]
         for name in list_for_report[0]:
