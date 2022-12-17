@@ -2,7 +2,8 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from settings import LIST_NAME_FOR_REPORT, RANGE_NAME, SPREADSHEET_ID
+from settings import RANGE_NAME, SPREADSHEET_ID
+from utilites import get_list_chosen_name_for_report
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
@@ -28,7 +29,10 @@ def balance_of_accountable_funds_report():
         if not values:
             print('No data found.')
             return
-        list_for_report = [LIST_NAME_FOR_REPORT, []]
+
+        list_name_for_report = get_list_chosen_name_for_report()
+
+        list_for_report = [list_name_for_report, []]
         for name in list_for_report[0]:
             list_for_report[1].append(values[1][values[0].index(name)])
         return list_for_report
@@ -71,6 +75,22 @@ def balance_of_warehouse_report():
 
         return report
 
+    except HttpError as err:
+        print(err)
+
+
+def get_list_of_all_names_from_sheet():
+    try:
+        values = get_values(SPREADSHEET_ID['ДДС'], RANGE_NAME['ДДС'])
+
+        if not values:
+            print('No data found.')
+            return []
+
+        first_index = values[0].index('ФП')
+        last_index = values[0].index('Илья (Сбер)')
+
+        return values[0][first_index:last_index + 1]
     except HttpError as err:
         print(err)
 
