@@ -5,6 +5,7 @@ from telegram.ext import CallbackContext, ConversationHandler
 from settings import (
     CHAT_ID_FACTORY,
     CHAT_ID_SUPPLY,
+    CHAT_ID_GENERAL,
     CHAT_ID_MIKIEREMIKI,
     PATH_LIST_NAME_FOR_REPORT,
     PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT
@@ -199,3 +200,37 @@ def help_command(update: Update, _: CallbackContext) -> None:
     )
 
     return 1
+
+
+def good_day(context: CallbackContext):
+    context.bot.send_message(
+        chat_id=CHAT_ID_GENERAL,
+        text="""*_Всем позитвной работы и хорошего дня!_*
+
+\#Сегодня_мы_будем_лучше_чем_мы_были_вчера
+\#Нас_ждет_успех
+\#Tiny_закажись
+\#Ферма_появись
+\#Где_то_заказчик_пытается_нас_найти
+\#Все_на_работу
+\#ЯМЫКОМАНДА
+\#Старания_окупятся""",
+        parse_mode=constants.PARSEMODE_MARKDOWN_V2
+    )
+
+
+def nice_rest(context: CallbackContext):
+    context.bot.send_message(
+        chat_id=CHAT_ID_GENERAL,
+        text="""*_Все молодцы, но нужно и отдыхать!_*
+
+\#Сегодня_вы_на_9_часов_стали_еще_лучше_умнее_в_общем_Краусачики
+\#Нас_застал_успех
+\#Где_то_построился_Tiny
+\#Возможно_ферма_изготовилась
+\#Где_то_заказчик_нас_нашел
+\#Все_с_работы
+\#ЯМЫСПАТЬ
+\#Старания_окупились""",
+        parse_mode=constants.PARSEMODE_MARKDOWN_V2
+    )
