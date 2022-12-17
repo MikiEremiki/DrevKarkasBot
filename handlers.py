@@ -27,7 +27,7 @@ def report_of_balances(update: Update, context: CallbackContext):
         report = googlesheets.balance_of_accountable_funds_report()
 
         if len(report[0]) == 0:
-            text = 'Настройте список для отчета\nИспользуйте /configure'
+            text = 'Настройте список для отчета\nИспользуйте /config_rep_of_bal'
         else:
             text = f'#БалансСредств На текущий момент\n'
             for i in range(len(report[0])):
