@@ -24,28 +24,27 @@ def echo(update: Update, context: CallbackContext):
                              text=text)
 
 
-def write_list_of_names_in_file(list_of_names):
-    with open('list_chosen_name_for_report.txt', 'w', encoding='utf-8') as f:
+def write_list_of_items_in_file(list_of_names, path):
+    with open(path, 'w', encoding='utf-8') as f:
         for item in list_of_names:
-            f.write(item + '\n')
+            f.write(str(item) + '\n')
 
 
-def read_list_of_names_in_file():
-    with open('list_chosen_name_for_report.txt', mode='r', encoding='utf-8') as f:
-        list_name_for_report = []
+def read_list_of_items_in_file(path):
+    with open(path, mode='r', encoding='utf-8') as f:
+        list_items = []
         for line in f:
-            list_name_for_report.append(line.replace('\n', ''))
-    return list_name_for_report
+            list_items.append(line.replace('\n', ''))
+    return list_items
 
 
-def get_list_chosen_name_for_report():
+def get_list_items_in_file(path):
     try:
-        list_name_for_report = read_list_of_names_in_file()
+        list_items = read_list_of_items_in_file(path)
     except FileNotFoundError:
-        list_name_for_report = []
-        write_list_of_names_in_file(list_name_for_report)
-
-    return list_name_for_report
+        list_items = []
+        write_list_of_items_in_file(list_items, path)
+    return list_items
 
 
 def delete_message_for_job_in_callback(context: CallbackContext):
