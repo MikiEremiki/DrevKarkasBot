@@ -4,4 +4,4 @@ settings.py
 venv/*
 .idea/*
 __pycache__/*
-list_chosen_name_for_report.txt
+data/*
