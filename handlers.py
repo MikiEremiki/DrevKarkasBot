@@ -2,14 +2,20 @@ from telegram import constants, Update
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext, ConversationHandler
 
-from settings import CHAT_ID_FACTORY, CHAT_ID_SUPPLY, CHAT_ID_MIKIEREMIKI
+from settings import (
+    CHAT_ID_FACTORY,
+    CHAT_ID_SUPPLY,
+    CHAT_ID_MIKIEREMIKI,
+    PATH_LIST_NAME_FOR_REPORT,
+    PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT
+)
 import googlesheets
 from utilites import (
     delete_message,
     save_message_for_delete,
     delete_message_for_job_in_callback,
-    get_list_chosen_name_for_report,
-    write_list_of_names_in_file
+    get_list_items_in_file,
+    write_list_of_items_in_file
 )
 
 
@@ -53,7 +59,7 @@ def report_of_warehouse(update: Update, context: CallbackContext):
 
 
 def notify_assignees_morning(context: CallbackContext):
-    delete_message(context)
+    delete_message(context, CHAT_ID_FACTORY, PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
     response = context.bot.send_message(
         chat_id=CHAT_ID_FACTORY,
         text="""*_Напоминание
@@ -71,11 +77,11 @@ def notify_assignees_morning(context: CallbackContext):
 \#Отчет""",
         parse_mode=constants.PARSEMODE_MARKDOWN_V2
     )
-    save_message_for_delete(response['message_id'])
+    save_message_for_delete(response['message_id'], PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
 
 
 def notify_assignees_evening(context: CallbackContext):
-    delete_message(context)
+    delete_message(context, CHAT_ID_FACTORY, PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
     response = context.bot.send_message(
         chat_id=CHAT_ID_FACTORY,
         text="""*_Напоминание
@@ -93,7 +99,7 @@ def notify_assignees_evening(context: CallbackContext):
 \#Отчет""",
         parse_mode=constants.PARSEMODE_MARKDOWN_V2
     )
-    save_message_for_delete(response['message_id'])
+    save_message_for_delete(response['message_id'], PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
 
 
 def configure_report_of_balances(update: Update, context: CallbackContext):
@@ -104,7 +110,7 @@ def configure_report_of_balances(update: Update, context: CallbackContext):
         list_of_all_names_for_report = googlesheets.get_list_of_all_names_from_sheet()
         context.user_data['list_of_all_names_for_report'] = list_of_all_names_for_report
 
-        list_name_for_report = get_list_chosen_name_for_report()
+        list_name_for_report = get_list_items_in_file(PATH_LIST_NAME_FOR_REPORT)
 
         callback_increment = 10 * len(str(len(list_name_for_report)))
         keyboard = []
@@ -167,7 +173,7 @@ def generate_list_of_names(update: Update, context: CallbackContext) -> None:
     context.user_data['keyboard'] = keyboard
     context.user_data['list_name_for_report'] = list_name_for_report
 
-    write_list_of_names_in_file(list_name_for_report)
+    write_list_of_items_in_file(list_name_for_report, PATH_LIST_NAME_FOR_REPORT)
 
     return 1
 
@@ -184,7 +190,7 @@ def end_configure_report_of_balances(update: Update, context: CallbackContext):
     return ConversationHandler.END
 
 
-def help(update: Update, _: CallbackContext) -> None:
+def help_command(update: Update, _: CallbackContext) -> None:
     update.message.reply_text(
         "/config_rep_of_bal - настройка списка для команды /report_of_balances\n"
         "Для завершения настройки нажмите кнопку с текстом \"Закрыть\"\n\n"
