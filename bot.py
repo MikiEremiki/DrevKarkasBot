@@ -17,7 +17,7 @@ from handlers import (
     configure_report_of_balances,
     generate_list_of_names,
     end_configure_report_of_balances,
-    help
+    help_command
 )
 from utilites import echo
 
@@ -28,7 +28,7 @@ def bot():
     jq = updater.job_queue
 
     dp.add_handler(CommandHandler('echo', echo))
-    dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('help', help_command))
     dp.add_handler(CommandHandler('report_of_balances', report_of_balances))
     dp.add_handler(CommandHandler('report_of_warehouse', report_of_warehouse))
 
@@ -40,7 +40,7 @@ def bot():
                 CallbackQueryHandler(generate_list_of_names),
             ],
         },
-        fallbacks=[CommandHandler('help', help)],
+        fallbacks=[CommandHandler('help', help_command)],
     )
     dp.add_handler(configure_report_of_balances_handler)
 
