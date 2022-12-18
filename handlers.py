@@ -204,7 +204,7 @@ def help_command(update: Update, _: CallbackContext) -> None:
 
 def good_day(context: CallbackContext):
     context.bot.send_message(
-        chat_id=CHAT_ID_MIKIEREMIKI,
+        chat_id=CHAT_ID_GENERAL,
         text="""*_Всем позитивной работы и хорошего дня\!_*
 
 \#СегодняМыБудемЛучшеЧемМыБылиВчера
@@ -221,7 +221,7 @@ def good_day(context: CallbackContext):
 
 def nice_rest(context: CallbackContext):
     context.bot.send_message(
-        chat_id=CHAT_ID_MIKIEREMIKI,
+        chat_id=CHAT_ID_GENERAL,
         text="""*_Все молодцы, но нужно и отдыхать\!_*
 
 \#СегодняМыНа\_9\_часовСталиЕщеЛучшеУмнее
