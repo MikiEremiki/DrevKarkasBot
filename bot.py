@@ -48,8 +48,8 @@ def bot():
 
     jq.run_daily(notify_assignees_morning, time(9, 00, 00, tzinfo=timezone('Europe/Moscow')))
     jq.run_daily(notify_assignees_evening, time(18, 00, 00, tzinfo=timezone('Europe/Moscow')))
-    jq.run_daily(good_day, time(9, 00, 00, tzinfo=timezone('Europe/Moscow')), days=range(5))
-    jq.run_daily(nice_rest, time(18, 00, 00, tzinfo=timezone('Europe/Moscow')), days=range(5))
+    jq.run_daily(good_day, time(9, 00, 00, tzinfo=timezone('Europe/Moscow')), days=[0])
+    jq.run_daily(nice_rest, time(18, 00, 00, tzinfo=timezone('Europe/Moscow')), days=[4])
 
     # Start the Bot
     updater.start_polling()
