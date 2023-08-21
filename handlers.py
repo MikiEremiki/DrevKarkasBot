@@ -1,3 +1,4 @@
+import logging
 import datetime
 
 from telegram import (
@@ -24,6 +25,8 @@ from utilites import (
     get_list_items_in_file,
     write_list_of_items_in_file
 )
+
+handler_logger = logging.getLogger('bot.handler')
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -310,6 +313,9 @@ async def report_of_time_work(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
+    handler_logger.info(f'ROTW | USER')
+    handler_logger.info(update.effective_user)
+
     try:
         full_name = context.user_data['time_work'].get('full_name',
                                                        update.effective_user.full_name)
