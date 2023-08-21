@@ -2,10 +2,12 @@ from datetime import time
 from pytz import timezone
 
 from telegram.ext import (
-    Updater,
+    Application,
     CommandHandler,
     CallbackQueryHandler,
-    ConversationHandler
+    ConversationHandler,
+    PicklePersistence,
+    Defaults
 )
 
 from settings import API_TOKEN
@@ -25,10 +27,27 @@ from utilites import echo
 
 
 def bot():
-    updater = Updater(API_TOKEN)
-    dp = updater.dispatcher
-    jq = updater.job_queue
+    bot_logger = load_log_config()
+    bot_logger.info('Инициализация бота')
 
+    defaults = Defaults(
+        tzinfo=timezone('Europe/Moscow')
+    )
+    persistence = PicklePersistence(filepath="db/conversationbot")
+    application = (
+        Application.builder()
+        .token(API_TOKEN)
+        .persistence(persistence)
+        .defaults(defaults)
+
+        .build()
+    )
+    del defaults
+
+    dp = application
+    jq = dp.job_queue
+
+    dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('echo', echo))
     dp.add_handler(CommandHandler('help', help_command))
     dp.add_handler(CommandHandler('report_of_balances', report_of_balances))
@@ -54,8 +73,7 @@ def bot():
     # Start the Bot
     updater.start_polling()
 
-    # Run the bot until you press Ctrl-C
-    updater.idle()
+    dp.run_polling()
 
 
 if __name__ == '__main__':
