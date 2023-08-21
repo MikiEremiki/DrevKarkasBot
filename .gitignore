@@ -1,8 +1,0 @@
-credentials.json
-settings.py
-venv/*
-.idea/*
-__pycache__/*
-data/*
-db/conversationbot
-log/log.txt*
