@@ -1,3 +1,5 @@
+import logging
+
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -5,7 +7,9 @@ from googleapiclient.errors import HttpError
 from settings import RANGE_NAME, SPREADSHEET_ID, PATH_LIST_NAME_FOR_REPORT
 from utilites import get_list_items_in_file
 
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+googlesheets_logger = logging.getLogger('bot.googlesheets')
+
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
 def get_service_sacc(scopes):

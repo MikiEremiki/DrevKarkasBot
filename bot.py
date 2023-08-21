@@ -10,6 +10,7 @@ from telegram.ext import (
     Defaults
 )
 
+from log.logging_config import load_log_config
 from settings import API_TOKEN
 from handlers import (
     notify_assignees_evening,
