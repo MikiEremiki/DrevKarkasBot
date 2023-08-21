@@ -128,7 +128,7 @@ def write_time_stamp(
             'values': values,
         }
 
-        range_sheet = f'{RANGE_NAME["Ответы на форму"]}A{row}:D{row}'
+        range_sheet = f'{RANGE_NAME["Ответы на форму"]}A{row}:E{row}'
 
         request = sheet.values().update(
             spreadsheetId=SPREADSHEET_ID['Отчет'],
