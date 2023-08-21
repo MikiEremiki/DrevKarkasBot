@@ -99,7 +99,13 @@ def get_list_of_all_names_from_sheet():
         print(err)
 
 
-def write_time_stamp(datetime, type_timestamp, full_name, delta_time='00:00'):
+def write_time_stamp(
+        datetime,
+        type_timestamp,
+        full_name,
+        chat_id,
+        delta_time='00:00',
+):
     try:
         values_column = get_values(
             SPREADSHEET_ID['Отчет'],
@@ -116,7 +122,7 @@ def write_time_stamp(datetime, type_timestamp, full_name, delta_time='00:00'):
         value_input_option = 'USER_ENTERED'
         response_value_render_option = 'FORMATTED_VALUE'
         values = [
-            [datetime, type_timestamp, full_name, delta_time],
+            [datetime, type_timestamp, full_name, delta_time, chat_id],
         ]
         value_range_body = {
             'values': values,

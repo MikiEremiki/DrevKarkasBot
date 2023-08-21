@@ -402,6 +402,7 @@ async def set_time_stamp(update: Update, context: ContextTypes.DEFAULT_TYPE):
     datetime_stamp = context.user_data['time_work']['datetime_stamp']
     flag_approve_write = False
     delta_time = '00:00'
+    chat_id = update.effective_chat.id
 
     match type_timestamp:
         case 'Приход':
@@ -487,6 +488,7 @@ async def set_time_stamp(update: Update, context: ContextTypes.DEFAULT_TYPE):
             datetime_stamp,
             type_timestamp,
             full_name,
+            chat_id,
             delta_time
         )
 
