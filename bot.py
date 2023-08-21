@@ -85,8 +85,10 @@ def bot():
     dp.add_handler(CallbackQueryHandler(write_choice,
                                         pattern='^Приход$|^Уход$'))
 
-    # Start the Bot
-    updater.start_polling()
+    jq.run_daily(notify_assignees_morning, time(9, 00))
+    jq.run_daily(notify_assignees_evening, time(18, 00))
+    jq.run_daily(good_day, time(9, 00), days=[1])
+    jq.run_daily(nice_rest, time(18, 00), days=[5])
 
     dp.run_polling()
 
