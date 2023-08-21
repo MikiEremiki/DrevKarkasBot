@@ -1,6 +1,12 @@
-from telegram import constants, Update
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import CallbackContext, ConversationHandler
+import datetime
+
+from telegram import (
+    constants,
+    Update,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
+from telegram.ext import ContextTypes, ConversationHandler
 
 from settings import (
     CHAT_ID_FACTORY,
@@ -20,10 +26,29 @@ from utilites import (
 )
 
 
-def report_of_balances(update: Update, context: CallbackContext):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data.setdefault('time_work', {})
+
+    await update.effective_chat.send_message(
+        'Бот готов к использованию\n'
+        '/rotw - Оставить отметку Приход-Уход\n'
+        '/set_my_name - Установить Имя и Фамилию для отображения в отчете\n'
+        '/set_start_work - Установить время Прихода в ручную\n'
+        '/set_end_work - Установить время Ухода в ручную\n'
+        '/reset_time_work - Сбросить все настройки рабочего времени\n'
+        '/start - Перезапустить бота\n'
+    )
+
+
+async def report_of_balances(
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE
+):
     if update.effective_chat.id not in [CHAT_ID_SUPPLY, CHAT_ID_MIKIEREMIKI]:
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text='У вас нет прав для просмотра данной информации')
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text='У вас нет прав для просмотра данной информации'
+        )
     else:
         report = googlesheets.balance_of_accountable_funds_report()
 
@@ -34,14 +59,19 @@ def report_of_balances(update: Update, context: CallbackContext):
             for i in range(len(report[0])):
                 text += f'{report[0][i]}: {report[1][i]}руб\n'
 
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=text)
+        await context.bot.send_message(chat_id=update.effective_chat.id,
+                                       text=text)
 
 
-def report_of_warehouse(update: Update, context: CallbackContext):
+async def report_of_warehouse(
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE
+):
     if update.effective_chat.id not in [CHAT_ID_FACTORY, CHAT_ID_MIKIEREMIKI]:
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text='У вас нет прав для просмотра данной информации')
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text='У вас нет прав для просмотра данной информации'
+        )
     else:
         report = googlesheets.balance_of_warehouse_report()
 
@@ -54,14 +84,18 @@ def report_of_warehouse(update: Update, context: CallbackContext):
             text += f'\nПластины:\n'
             text += f'{item["Пластины"]}\n'
 
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=text,
-                                 parse_mode=constants.PARSEMODE_MARKDOWN)
+        await context.bot.send_message(chat_id=update.effective_chat.id,
+                                       text=text,
+                                       parse_mode=constants.ParseMode.MARKDOWN)
 
 
-def notify_assignees_morning(context: CallbackContext):
-    delete_message(context, CHAT_ID_FACTORY, PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
-    response = context.bot.send_message(
+async def notify_assignees_morning(context: ContextTypes.DEFAULT_TYPE):
+    await delete_message(
+        context,
+        CHAT_ID_FACTORY,
+        PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT
+    )
+    message = await context.bot.send_message(
         chat_id=CHAT_ID_FACTORY,
         text="""*_Напоминание
 
@@ -76,14 +110,19 @@ def notify_assignees_morning(context: CallbackContext):
 \#Замена
 \#Вработу
 \#Отчет""",
-        parse_mode=constants.PARSEMODE_MARKDOWN_V2
+        parse_mode=constants.ParseMode.MARKDOWN_V2
     )
-    save_message_for_delete(response['message_id'], PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
+    save_message_for_delete(message.message_id,
+                            PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
 
 
-def notify_assignees_evening(context: CallbackContext):
-    delete_message(context, CHAT_ID_FACTORY, PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
-    response = context.bot.send_message(
+async def notify_assignees_evening(context: ContextTypes.DEFAULT_TYPE):
+    await delete_message(
+        context,
+        CHAT_ID_FACTORY,
+        PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT
+    )
+    message = await context.bot.send_message(
         chat_id=CHAT_ID_FACTORY,
         text="""*_Напоминание
 
@@ -98,18 +137,27 @@ def notify_assignees_evening(context: CallbackContext):
 \#Замена
 \#Вработу
 \#Отчет""",
-        parse_mode=constants.PARSEMODE_MARKDOWN_V2
+        parse_mode=constants.ParseMode.MARKDOWN_V2
     )
-    save_message_for_delete(response['message_id'], PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
+    save_message_for_delete(message.message_id,
+                            PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
 
 
-def configure_report_of_balances(update: Update, context: CallbackContext):
+async def configure_report_of_balances(
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE
+):
     if update.effective_chat.id not in [CHAT_ID_SUPPLY, CHAT_ID_MIKIEREMIKI]:
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text='У вас нет прав для просмотра данной информации')
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text='У вас нет прав для просмотра данной информации'
+        )
     else:
-        list_of_all_names_for_report = googlesheets.get_list_of_all_names_from_sheet()
-        context.user_data['list_of_all_names_for_report'] = list_of_all_names_for_report
+        list_of_all_names_for_report = (
+            googlesheets.get_list_of_all_names_from_sheet()
+        )
+        context.user_data[
+            'list_of_all_names_for_report'] = list_of_all_names_for_report
 
         list_name_for_report = get_list_items_in_file(PATH_LIST_NAME_FOR_REPORT)
 
@@ -134,7 +182,10 @@ def configure_report_of_balances(update: Update, context: CallbackContext):
 
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        update.message.reply_text('Выберите кого выводить в отчете:', reply_markup=reply_markup)
+        await update.message.reply_text(
+            'Выберите кого выводить в отчете:',
+            reply_markup=reply_markup
+        )
 
         context.user_data['keyboard'] = keyboard
         context.user_data['list_name_for_report'] = list_name_for_report
@@ -143,33 +194,45 @@ def configure_report_of_balances(update: Update, context: CallbackContext):
         return 1
 
 
-def generate_list_of_names(update: Update, context: CallbackContext) -> None:
+async def generate_list_of_names(
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE
+):
     query = update.callback_query
-    query.answer()
+    await query.answer()
 
     int_number = int(query.data)
 
     keyboard = context.user_data['keyboard']
     list_name_for_report = context.user_data['list_name_for_report']
     callback_increment = context.user_data['callback_increment']
-    list_of_all_names_for_report = context.user_data['list_of_all_names_for_report']
+    list_of_all_names_for_report = context.user_data[
+        'list_of_all_names_for_report']
 
     if int_number in list(range(len(list_of_all_names_for_report))):
-        if keyboard[int_number][0].text.replace('✅', '') not in list_name_for_report:
+        if keyboard[int_number][0].text.replace('✅',
+                                                '') not in list_name_for_report:
             keyboard[int_number][0].text += '✅'
             keyboard[int_number][0].callback_data += callback_increment
-            list_name_for_report.append(keyboard[int_number][0].text.replace('✅', ''))
+            list_name_for_report.append(
+                keyboard[int_number][0].text.replace('✅', ''))
 
-    if int_number in [callback_increment + n for n in range(len(list_of_all_names_for_report))]:
+    if int_number in [callback_increment + n for n in
+                      range(len(list_of_all_names_for_report))]:
         get_index_back = int_number - callback_increment
 
-        if keyboard[get_index_back][0].text.replace('✅', '') in list_name_for_report:
-            list_name_for_report.remove(keyboard[get_index_back][0].text.replace('✅', ''))
-        keyboard[get_index_back][0].text = keyboard[get_index_back][0].text.replace('✅', '')
+        if keyboard[get_index_back][0].text.replace('✅',
+                                                    '') in list_name_for_report:
+            list_name_for_report.remove(
+                keyboard[get_index_back][0].text.replace('✅', ''))
+        keyboard[get_index_back][0].text = keyboard[get_index_back][
+            0].text.replace('✅', '')
         keyboard[get_index_back][0].callback_data = get_index_back
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text(text=f"Выберите кого выводить в отчете:", reply_markup=reply_markup)
+    await query.edit_message_text(
+        text=f"Выберите кого выводить в отчете:",
+        reply_markup=reply_markup)
 
     context.user_data['keyboard'] = keyboard
     context.user_data['list_name_for_report'] = list_name_for_report
@@ -179,31 +242,37 @@ def generate_list_of_names(update: Update, context: CallbackContext) -> None:
     return 1
 
 
-def end_configure_report_of_balances(update: Update, context: CallbackContext):
+async def end_configure_report_of_balances(
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE
+):
     query = update.callback_query
-    query.answer()
+    await query.answer()
 
-    context_for_job = {"chat_id": query.message.chat_id, "message_id": query.message.message_id}
+    context_for_job = {"chat_id": query.message.chat_id,
+                       "message_id": query.message.message_id}
     if query.data == 'Закрыть':
-        query.edit_message_text(text=f"Отчет настроен\nСообщение удалится автоматически")
-        context.job_queue.run_once(delete_message_for_job_in_callback, 3, context=context_for_job)
+        await query.edit_message_text(
+            text=f"Отчет настроен\nСообщение удалится автоматически")
+        context.job_queue.run_once(delete_message_for_job_in_callback, 3,
+                                   context=context_for_job)
 
     return ConversationHandler.END
 
 
-def help_command(update: Update, _: CallbackContext) -> None:
-    update.message.reply_text(
-        "/config_rep_of_bal - настройка списка для команды /report_of_balances\n"
-        "Для завершения настройки нажмите кнопку с текстом \"Закрыть\"\n\n"
-        "/report_of_balances - Отчет по балансу для группы Снабжения\n"
-        "/report_of_warehouse - Сводка по складу для группы Производство\n"
+async def help_command(update: Update, _: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        '/config_rep_of_bal - настройка списка для команды /report_of_balances\n'
+        'Для завершения настройки нажмите кнопку с текстом \"Закрыть\"\n\n'
+        '/report_of_balances - Отчет по балансу для группы Снабжения\n'
+        '/report_of_warehouse - Сводка по складу для группы Производство\n'
     )
 
     return 1
 
 
-def good_day(context: CallbackContext):
-    context.bot.send_message(
+async def good_day(context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(
         chat_id=CHAT_ID_GENERAL,
         text="""*_Всем позитивной работы и хорошей недели\!_*
 
@@ -215,12 +284,12 @@ def good_day(context: CallbackContext):
 \#ВсеНаРаботу
 \#ЯМЫКОМАНДА
 \#СтаранияОкупятся""",
-        parse_mode=constants.PARSEMODE_MARKDOWN_V2
+        parse_mode=constants.ParseMode.MARKDOWN_V2
     )
 
 
-def nice_rest(context: CallbackContext):
-    context.bot.send_message(
+async def nice_rest(context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(
         chat_id=CHAT_ID_GENERAL,
         text="""*_Все молодцы, вот и прошла неделя, но нужно и отдыхать\!_*
 
@@ -233,5 +302,196 @@ def nice_rest(context: CallbackContext):
 \#ВсеСРаботы
 \#ЯМЫСПАТЬ
 \#СтаранияОкупились""",
-        parse_mode=constants.PARSEMODE_MARKDOWN_V2
+        parse_mode=constants.ParseMode.MARKDOWN_V2
+    )
+
+
+async def report_of_time_work(
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE
+):
+    try:
+        full_name = context.user_data['time_work'].get('full_name',
+                                                   update.effective_user.full_name)
+    except KeyError:
+        await update.effective_chat.send_message(
+            'Выполните команду /start'
+        )
+    text = (f'Ваше имя, которое будет отображаться в отчетах:\n{full_name}\n'
+            'Выберите тип отметки\n\n'
+            'Для настройки имени:\n'
+            '/set_my_name Имя Фамилия\n'
+            )
+    await update.effective_chat.send_message(
+        text=text,
+        reply_markup=InlineKeyboardMarkup([
+            [InlineKeyboardButton('Приход', callback_data='Приход'),
+             InlineKeyboardButton('Уход', callback_data='Уход')],
+        ])
+    )
+
+
+async def write_choice(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    context.user_data['time_work']['type_timestamp'] = query.data
+    context.user_data['time_work']['datetime_stamp'] = (datetime.datetime.now().
+                                                        strftime(
+        "%d.%m.%Y %H:%M:%S"))
+
+    await set_time_stamp(update, context)
+
+
+async def set_my_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if len(context.args) == 0:
+        context.user_data['time_work'][
+            'full_name'] = update.effective_user.full_name
+    else:
+        context.user_data['time_work']['full_name'] = ' '.join(
+            i for i in context.args)
+
+    full_name = context.user_data['time_work']['full_name']
+    await update.effective_chat.send_message(
+        text=f'Ваше новое имя {full_name}\nДля обновления текста нажмите /rotw'
+    )
+
+
+async def set_start_work(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data['time_work']['flag_start'] = True
+    context.user_data['time_work']['flag_end'] = False
+
+    datetime_stamp = ' '.join(i for i in context.args)
+    datetime_stamp += ':00'  # add seconds
+
+    try:
+        context.user_data['time_work']['datetime_stamp'] = datetime_stamp
+        context.user_data['time_work']['type_timestamp'] = 'Приход'
+
+        await set_time_stamp(update, context)
+    except Exception as e:
+        print(e)
+        await update.effective_chat.send_message(
+            f'Неверный формат\nПолучилось {datetime_stamp}'
+        )
+
+
+async def set_end_work(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data['time_work']['flag_start'] = True
+    context.user_data['time_work']['flag_end'] = True
+
+    datetime_stamp = ' '.join(i for i in context.args)
+    datetime_stamp += ':00'  # add seconds
+
+    try:
+        context.user_data['time_work']['datetime_stamp'] = datetime_stamp
+        context.user_data['time_work']['type_timestamp'] = 'Уход'
+
+        await set_time_stamp(update, context)
+    except Exception as e:
+        print(e)
+        await update.effective_chat.send_message(
+            f'Неверный формат\nПолучилось {datetime_stamp}'
+        )
+
+
+async def set_time_stamp(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    type_timestamp = context.user_data['time_work']['type_timestamp']
+    full_name = context.user_data['time_work'].get('full_name',
+                                                   update.effective_user.full_name)
+    datetime_stamp = context.user_data['time_work']['datetime_stamp']
+    flag_approve_write = False
+    delta_time = '00:00'
+
+    match type_timestamp:
+        case 'Приход':
+            flag_lock_start = context.user_data['time_work'].get(
+                'flag_lock_start', False)
+            if flag_lock_start:
+                context.user_data['time_work']['flag_start'] = False
+            else:
+                context.user_data['time_work']['flag_start'] = True
+        case 'Уход':
+            context.user_data['time_work']['flag_end'] = True
+
+    flag_start = context.user_data['time_work'].get('flag_start', None)
+    flag_end = context.user_data['time_work'].get('flag_end', None)
+
+    if flag_start and not flag_end:
+        await update.effective_chat.send_message(
+            'Ваша отметка:\n'
+            f'Время: {datetime_stamp}\n'
+            f'Тип отметки: {type_timestamp}\n'
+            f'Ваше имя: {full_name}'
+        )
+
+        context.user_data['time_work'][
+            'datetime_stamp_start'] = datetime.datetime.strptime(
+            datetime_stamp,
+            '%d.%m.%Y %H:%M:%S')
+        flag_approve_write = True
+        context.user_data['time_work']['flag_lock_start'] = True
+
+    elif not flag_start and flag_end:
+        await update.effective_chat.send_message(
+            'Запись отклонена\n'
+            'В начале необходимо сделать Приход\n'
+            'Если вы забыли нажать приход, то введите время в ручную:\n'
+            '/set_start_work дд.мм.гггг ч:м\n'
+            'Затем повторите "Уход"'
+        )
+
+        context.user_data['time_work']['flag_end'] = False
+
+    elif not flag_start and not flag_end:
+        await update.effective_chat.send_message(
+            'Запись отклонена\n'
+            'Вы уже сделали Приход\n'
+            'Если вы забыли нажать уход, то введите время в ручную:\n'
+            '/set_end_work дд.мм.гггг ч:м\n'
+            'Затем повторите "Приход"'
+        )
+
+        context.user_data['time_work']['flag_start'] = False
+
+    elif flag_start and flag_end:
+        await update.effective_chat.send_message(
+            'Ваша отметка:\n'
+            f'Время: {datetime_stamp}\n'
+            f'Тип отметки: {type_timestamp}\n'
+            f'Ваше имя: {full_name}'
+        )
+
+        context.user_data['time_work'][
+            'datetime_stamp_end'] = datetime.datetime.strptime(
+            datetime_stamp,
+            '%d.%m.%Y %H:%M:%S')
+        context.user_data['time_work']['delta_time'] = (
+                context.user_data['time_work']['datetime_stamp_end'] -
+                context.user_data['time_work']['datetime_stamp_start']
+        )
+
+        hours = context.user_data['time_work']['delta_time'].seconds // 3600
+        minutes = context.user_data['time_work'][
+                      'delta_time'].seconds // 60 % 60
+        seconds = context.user_data['time_work']['delta_time'].seconds % 60
+        delta_time = ':'.join([str(hours), str(minutes), str(seconds)])
+        flag_approve_write = True
+
+        context.user_data['time_work']['flag_start'] = False
+        context.user_data['time_work']['flag_end'] = False
+
+    if flag_approve_write:
+        googlesheets.write_time_stamp(
+            datetime_stamp,
+            type_timestamp,
+            full_name,
+            delta_time
+        )
+
+
+async def reset_time_work(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data['time_work'].clear()
+    await update.effective_chat.send_message(
+        'Все параметры сброшены можно начать новую цепочку Приход-Уход'
     )

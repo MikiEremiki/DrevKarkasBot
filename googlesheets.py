@@ -89,7 +89,7 @@ def get_list_of_all_names_from_sheet():
 
         if not values:
             print('No data found.')
-            return []
+            return
 
         first_index = values[0].index('ФП')
         last_index = values[0].index('Илья (Сбер)')
@@ -97,3 +97,62 @@ def get_list_of_all_names_from_sheet():
         return values[0][first_index:last_index + 1]
     except HttpError as err:
         print(err)
+
+
+def write_time_stamp(datetime, type_timestamp, full_name, delta_time='00:00'):
+    try:
+        values_column = get_values(
+            SPREADSHEET_ID['Отчет'],
+            RANGE_NAME['Ответы на форму_A']
+        )
+
+        if not values_column:
+            googlesheets_logger.info('No data found')
+            return
+
+        row = len(values_column) + 1
+
+        sheet = get_service_sacc(SCOPES).spreadsheets()
+        value_input_option = 'USER_ENTERED'
+        response_value_render_option = 'FORMATTED_VALUE'
+        values = [
+            [datetime, type_timestamp, full_name, delta_time],
+        ]
+        value_range_body = {
+            'values': values,
+        }
+
+        range_sheet = f'{RANGE_NAME["Ответы на форму"]}A{row}:D{row}'
+
+        request = sheet.values().update(
+            spreadsheetId=SPREADSHEET_ID['Отчет'],
+            range=range_sheet,
+            valueInputOption=value_input_option,
+            responseValueRenderOption=response_value_render_option,
+            body=value_range_body
+        )
+        try:
+            response = request.execute()
+
+            googlesheets_logger.info(": ".join(
+                [
+                    'spreadsheetId: ',
+                    response['spreadsheetId'],
+                    '\n'
+                    'updatedRange: ',
+                    response['updatedRange']
+                ]
+            ))
+        except TimeoutError:
+            googlesheets_logger.error(value_range_body)
+        except Exception as e:
+            googlesheets_logger.error(e)
+
+    except HttpError as err:
+        googlesheets_logger.error(err)
+
+
+if __name__ == '__main__':
+    write_time_stamp('21.08.2023 21:31:00',
+                     'Приход',
+                     'Еремин Михаил')

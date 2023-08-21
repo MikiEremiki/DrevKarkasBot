@@ -12,7 +12,9 @@ from telegram.ext import (
 
 from log.logging_config import load_log_config
 from settings import API_TOKEN
+from utilites import echo
 from handlers import (
+    start,
     notify_assignees_evening,
     notify_assignees_morning,
     report_of_balances,
@@ -22,9 +24,14 @@ from handlers import (
     end_configure_report_of_balances,
     help_command,
     good_day,
-    nice_rest
+    nice_rest,
+    report_of_time_work,
+    write_choice,
+    set_my_name,
+    set_start_work,
+    set_end_work,
+    reset_time_work,
 )
-from utilites import echo
 
 
 def bot():
@@ -51,14 +58,18 @@ def bot():
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('echo', echo))
     dp.add_handler(CommandHandler('help', help_command))
-    dp.add_handler(CommandHandler('report_of_balances', report_of_balances))
-    dp.add_handler(CommandHandler('report_of_warehouse', report_of_warehouse))
+    dp.add_handler(CommandHandler('report_of_balances',
+                                  report_of_balances))
+    dp.add_handler(CommandHandler('report_of_warehouse',
+                                  report_of_warehouse))
 
     configure_report_of_balances_handler = ConversationHandler(
-        entry_points=[CommandHandler('config_rep_of_bal', configure_report_of_balances)],
+        entry_points=[CommandHandler('config_rep_of_bal',
+                                     configure_report_of_balances)],
         states={
             1: [
-                CallbackQueryHandler(end_configure_report_of_balances, pattern='^Закрыть$'),
+                CallbackQueryHandler(end_configure_report_of_balances,
+                                     pattern='^Закрыть$'),
                 CallbackQueryHandler(generate_list_of_names),
             ],
         },
@@ -66,10 +77,13 @@ def bot():
     )
     dp.add_handler(configure_report_of_balances_handler)
 
-    jq.run_daily(notify_assignees_morning, time(9, 00, 00, tzinfo=timezone('Europe/Moscow')))
-    jq.run_daily(notify_assignees_evening, time(18, 00, 00, tzinfo=timezone('Europe/Moscow')))
-    jq.run_daily(good_day, time(9, 00, 00, tzinfo=timezone('Europe/Moscow')), days=[0])
-    jq.run_daily(nice_rest, time(18, 00, 00, tzinfo=timezone('Europe/Moscow')), days=[4])
+    dp.add_handler(CommandHandler('rotw', report_of_time_work))
+    dp.add_handler(CommandHandler('set_my_name', set_my_name))
+    dp.add_handler(CommandHandler('set_start_work', set_start_work))
+    dp.add_handler(CommandHandler('set_end_work', set_end_work))
+    dp.add_handler(CommandHandler('reset_time_work', reset_time_work))
+    dp.add_handler(CallbackQueryHandler(write_choice,
+                                        pattern='^Приход$|^Уход$'))
 
     # Start the Bot
     updater.start_polling()
