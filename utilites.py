@@ -5,12 +5,14 @@ import telegram.error
 import os
 
 
-def delete_message(context: CallbackContext, chat_id, path):
+async def delete_message(context: CallbackContext, chat_id, path):
     list_message_id_for_delete = get_list_items_in_file(path)
     if len(list_message_id_for_delete) == 2:
         try:
-            context.bot.delete_message(chat_id=chat_id,
-                                       message_id=int(list_message_id_for_delete[0]))
+            await context.bot.delete_message(
+                chat_id=chat_id,
+                message_id=int(list_message_id_for_delete[0])
+            )
         except telegram.error.BadRequest:
             print('Сообщение уже удалено')
         list_message_id_for_delete.pop(0)
@@ -23,10 +25,12 @@ def save_message_for_delete(message_id, path):
     write_list_of_items_in_file(list_message_id_for_delete, path)
 
 
-def echo(update: Update, context: CallbackContext):
+async def echo(update: Update, context: CallbackContext):
     text = f'chat.id: {update.effective_chat.id}'
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=text)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text
+    )
 
 
 def write_list_of_items_in_file(list_of_names, path):
@@ -54,8 +58,8 @@ def get_list_items_in_file(path):
     return list_items
 
 
-def delete_message_for_job_in_callback(context: CallbackContext):
-    context.bot.delete_message(
+async def delete_message_for_job_in_callback(context: CallbackContext):
+    await context.bot.delete_message(
         chat_id=context.job.context['chat_id'],
         message_id=context.job.context['message_id']
     )
