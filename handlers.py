@@ -480,6 +480,7 @@ async def set_time_stamp(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         context.user_data['time_work']['flag_start'] = False
         context.user_data['time_work']['flag_end'] = False
+        context.user_data['time_work']['flag_lock_start'] = False
 
     if flag_approve_write:
         googlesheets.write_time_stamp(
