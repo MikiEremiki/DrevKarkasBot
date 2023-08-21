@@ -312,23 +312,24 @@ async def report_of_time_work(
 ):
     try:
         full_name = context.user_data['time_work'].get('full_name',
-                                                   update.effective_user.full_name)
+                                                       update.effective_user.full_name)
+        text = (
+            f'Ваше имя, которое будет отображаться в отчетах:\n{full_name}\n'
+            'Выберите тип отметки\n\n'
+            'Для настройки имени:\n'
+            '/set_my_name Имя Фамилия\n'
+        )
+        await update.effective_chat.send_message(
+            text=text,
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton('Приход', callback_data='Приход'),
+                 InlineKeyboardButton('Уход', callback_data='Уход')],
+            ])
+        )
     except KeyError:
         await update.effective_chat.send_message(
             'Выполните команду /start'
         )
-    text = (f'Ваше имя, которое будет отображаться в отчетах:\n{full_name}\n'
-            'Выберите тип отметки\n\n'
-            'Для настройки имени:\n'
-            '/set_my_name Имя Фамилия\n'
-            )
-    await update.effective_chat.send_message(
-        text=text,
-        reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton('Приход', callback_data='Приход'),
-             InlineKeyboardButton('Уход', callback_data='Уход')],
-        ])
-    )
 
 
 async def write_choice(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -337,8 +338,7 @@ async def write_choice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     context.user_data['time_work']['type_timestamp'] = query.data
     context.user_data['time_work']['datetime_stamp'] = (datetime.datetime.now().
-                                                        strftime(
-        "%d.%m.%Y %H:%M:%S"))
+                                                        strftime("%d.%m.%Y %H:%M:%S"))
 
     await set_time_stamp(update, context)
 
