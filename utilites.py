@@ -60,8 +60,8 @@ def get_list_items_in_file(path):
 
 async def delete_message_for_job_in_callback(context: CallbackContext):
     await context.bot.delete_message(
-        chat_id=context.job.context['chat_id'],
-        message_id=context.job.context['message_id']
+        chat_id=context.job.data['chat_id'],
+        message_id=context.job.data['message_id']
     )
 
 

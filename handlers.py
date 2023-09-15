@@ -1,5 +1,6 @@
 import logging
 import datetime
+from typing import List
 
 from telegram import (
     constants,
@@ -206,7 +207,7 @@ async def generate_list_of_names(
 
     int_number = int(query.data)
 
-    keyboard = context.user_data['keyboard']
+    keyboard: List[List[InlineKeyboardButton]] = context.user_data['keyboard']
     list_name_for_report = context.user_data['list_name_for_report']
     callback_increment = context.user_data['callback_increment']
     list_of_all_names_for_report = context.user_data[
@@ -215,8 +216,12 @@ async def generate_list_of_names(
     if int_number in list(range(len(list_of_all_names_for_report))):
         if keyboard[int_number][0].text.replace('✅',
                                                 '') not in list_name_for_report:
-            keyboard[int_number][0].text += '✅'
-            keyboard[int_number][0].callback_data += callback_increment
+            item = keyboard[int_number][0].text
+            callback_data = keyboard[int_number][0].callback_data
+            keyboard[int_number][0] = InlineKeyboardButton(
+                f"{item}✅",
+                callback_data=callback_data + callback_increment
+            )
             list_name_for_report.append(
                 keyboard[int_number][0].text.replace('✅', ''))
 
@@ -228,9 +233,11 @@ async def generate_list_of_names(
                                                     '') in list_name_for_report:
             list_name_for_report.remove(
                 keyboard[get_index_back][0].text.replace('✅', ''))
-        keyboard[get_index_back][0].text = keyboard[get_index_back][
-            0].text.replace('✅', '')
-        keyboard[get_index_back][0].callback_data = get_index_back
+        item = keyboard[get_index_back][0].text.replace('✅', '')
+        keyboard[get_index_back][0] = InlineKeyboardButton(
+                f"{item}",
+                callback_data=get_index_back
+            )
 
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(
@@ -258,7 +265,7 @@ async def end_configure_report_of_balances(
         await query.edit_message_text(
             text=f"Отчет настроен\nСообщение удалится автоматически")
         context.job_queue.run_once(delete_message_for_job_in_callback, 3,
-                                   context=context_for_job)
+                                   data=context_for_job)
 
     return ConversationHandler.END
 
