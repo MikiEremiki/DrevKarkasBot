@@ -26,10 +26,18 @@ def save_message_for_delete(message_id, path):
 
 
 async def echo(update: Update, context: CallbackContext):
-    text = f'chat.id: {update.effective_chat.id}'
+    text = ('chat_id = <code>' +
+            str(update.effective_chat.id) + '</code>\n' +
+            'user_id = <code>' +
+            str(update.effective_user.id) + '</code>\n' +
+            'is_forum = <code>' +
+            str(update.effective_chat.is_forum) + '</code>\n' +
+            'message_thread_id = <code>' +
+            str(update.message.message_thread_id) + '</code>')
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text
+        text=text,
+        parse_mode=constants.ParseMode.HTML
     )
 
 
