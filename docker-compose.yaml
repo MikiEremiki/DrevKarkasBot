@@ -1,0 +1,6 @@
+services:
+  dk_bot:
+    build:
+      context: .
+    volumes:
+      - /data:/app/data
