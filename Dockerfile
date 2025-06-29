@@ -5,13 +5,15 @@ ENV PYTHONPATH=/app \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 WORKDIR /app
+COPY pyproject.toml .
+COPY uv.lock .
 
-RUN pip install --no-cache-dir uv
+RUN uv sync --locked
 
-RUN --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    uv pip install --system -r requirements.txt
 
 COPY . .
 
-CMD uv run --no-project bot.py
+CMD uv run bot.py

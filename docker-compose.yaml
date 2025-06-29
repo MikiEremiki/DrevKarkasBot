@@ -3,4 +3,7 @@ services:
     build:
       context: .
     volumes:
-      - /data:/app/data
+      - ./data:/app/data
+      - ./log/archive:/app/log/archive
+      - ./settings.py:/app/settings.py:ro
+      - ./credentials.json:/app/credentials.json:ro
