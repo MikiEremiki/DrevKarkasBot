@@ -26,14 +26,25 @@ def save_message_for_delete(message_id, path):
 
 
 async def echo(message: Message):
-    text = ('chat_id = <code>' +
-            str(message.chat.id) + '</code>\n' +
-            'user_id = <code>' +
-            str(message.from_user.id) + '</code>\n' +
-            'is_forum = <code>' +
-            str(message.chat.is_forum) + '</code>\n' +
-            'message_thread_id = <code>' +
-            str(message.message_thread_id) + '</code>')
+    chat = message.chat
+    user = message.from_user
+    chat_id = str(chat.id)
+    user_id = str(user.id)
+    is_forum = str(chat.is_forum)
+
+    text = 'chat_id = <code>' + chat_id + '</code>\n'
+    text += 'user_id = <code>' + user_id + '</code>\n'
+    text += 'is_forum = <code>' + is_forum + '</code>\n'
+
+    try:
+        message_thread_id = str(message.message_thread_id)
+        topic_name = str(message.reply_to_message.forum_topic_created.name)
+
+        text += 'message_thread_id = <code>' + message_thread_id + '</code>\n'
+        text += 'topic_name = <code>' + topic_name + '</code>\n'
+
+    except (AttributeError, TelegramBadRequest) as e:
+        text += f'\n{e}'
     await message.answer(text)
 
 
