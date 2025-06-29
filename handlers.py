@@ -55,11 +55,11 @@ async def start(message: Message, state: FSMContext):
     )
 
 
-async def report_of_balances(message: Message, agcm):
+async def report_of_balances(message: Message):
     if message.chat.id not in [CHAT_ID_SUPPLY, CHAT_ID_MIKIEREMIKI]:
         await message.answer('У вас нет прав для просмотра данной информации')
     else:
-        report = await googlesheets.balance_of_accountable_funds_report(agcm)
+        report = await googlesheets.balance_of_accountable_funds_report()
 
         if len(report[0]) == 0:
             text = 'Настройте список для отчета\nИспользуйте /config_rep_of_bal'
@@ -71,11 +71,11 @@ async def report_of_balances(message: Message, agcm):
         await message.answer(text)
 
 
-async def report_of_warehouse(message: Message, agcm):
+async def report_of_warehouse(message: Message):
     if message.chat.id not in [CHAT_ID_FACTORY, CHAT_ID_MIKIEREMIKI]:
         await message.answer('У вас нет прав для просмотра данной информации')
     else:
-        report = await googlesheets.balance_of_warehouse_report(agcm)
+        report = await googlesheets.balance_of_warehouse_report()
 
         text = f'#БалансСклада\n'
         for key_1, item in report.items():
@@ -152,12 +152,12 @@ async def notify_assignees_evening(bot: Bot):
 
 
 async def configure_report_of_balances(
-        message: Message, state: FSMContext, agcm):
+        message: Message, state: FSMContext):
     if message.chat.id not in [CHAT_ID_SUPPLY, CHAT_ID_MIKIEREMIKI]:
         await message.answer('У вас нет прав для просмотра данной информации')
     else:
         list_of_all_names_for_report = (
-            await googlesheets.get_list_of_all_names_from_sheet(agcm)
+            await googlesheets.get_list_of_all_names_from_sheet()
         )
 
         list_name_for_report = get_list_items_in_file(PATH_LIST_NAME_FOR_REPORT)

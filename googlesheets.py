@@ -1,7 +1,6 @@
 import logging
 
-import gspread_asyncio
-
+from gspread_asyncio import AsyncioGspreadClientManager, AsyncioGspreadClient
 from google.oauth2.service_account import Credentials
 
 from settings import RANGE_NAME, SPREADSHEET_ID, PATH_LIST_NAME_FOR_REPORT
@@ -19,11 +18,11 @@ def get_creds():
     return scoped
 
 
-agcm = gspread_asyncio.AsyncioGspreadClientManager(get_creds)
+agcm = AsyncioGspreadClientManager(get_creds)
 
 
-async def balance_of_accountable_funds_report(agcm):
-    agc: gspread_asyncio.AsyncioGspreadClient = await agcm.authorize()
+async def balance_of_accountable_funds_report():
+    agc: AsyncioGspreadClient = await agcm.authorize()
     ss = await agc.open_by_url(SPREADSHEET_ID['ДДС'])
     values = await ss.values_get(RANGE_NAME['ДДС'])
     values = values['values']
@@ -40,7 +39,7 @@ async def balance_of_accountable_funds_report(agcm):
     return list_for_report
 
 
-async def balance_of_warehouse_report(agcm):
+async def balance_of_warehouse_report():
     report = {
         'Сейчас': {
             'Доска': {}
@@ -50,7 +49,7 @@ async def balance_of_warehouse_report(agcm):
         },
     }
 
-    agc: gspread_asyncio.AsyncioGspreadClient = await agcm.authorize()
+    agc: AsyncioGspreadClient = await agcm.authorize()
     ss = await agc.open_by_url(SPREADSHEET_ID['Производство'])
     values = await ss.values_get(RANGE_NAME['Производство'])
     values = values['values']
@@ -85,8 +84,8 @@ async def balance_of_warehouse_report(agcm):
     return report
 
 
-async def get_list_of_all_names_from_sheet(agcm):
-    agc: gspread_asyncio.AsyncioGspreadClient = await agcm.authorize()
+async def get_list_of_all_names_from_sheet():
+    agc: AsyncioGspreadClient = await agcm.authorize()
     ss = await agc.open_by_url(SPREADSHEET_ID['ДДС'])
     values = await ss.values_get(RANGE_NAME['ДДС'])
     values = values['values']
@@ -108,7 +107,7 @@ async def write_time_stamp(
         chat_id,
         delta_time='00:00',
 ):
-    agc: gspread_asyncio.AsyncioGspreadClient = await agcm.authorize()
+    agc: AsyncioGspreadClient = await agcm.authorize()
     ss = await agc.open_by_url(SPREADSHEET_ID['Отчет'])
     values_column = await ss.values_get(RANGE_NAME['Ответы на форму_A'])
     values_column = values_column['values']
