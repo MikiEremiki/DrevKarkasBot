@@ -42,10 +42,12 @@ async def balance_of_accountable_funds_report():
 async def balance_of_warehouse_report():
     report = {
         'Сейчас': {
-            'Доска': {}
+            'Доска': {},
+            'Пластины': ''
         },
         'Прогноз': {
-            'Доска': {}
+            'Доска': {},
+            'Пластины': ''
         },
     }
 
