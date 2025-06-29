@@ -372,8 +372,8 @@ async def write_choice(callback: CallbackQuery, state: FSMContext):
     time_work = data.get('time_work', {})
 
     time_work['type_timestamp'] = callback.data
-    time_work['datetime_stamp'] = datetime.datetime.now().strftime(
-        "%d.%m.%Y %H:%M:%S")
+    datetime_stamp = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+    time_work['datetime_stamp'] = datetime_stamp
 
     await state.update_data(time_work=time_work)
 
@@ -394,9 +394,8 @@ async def set_my_name(message: Message, state: FSMContext):
     await state.update_data(time_work=time_work)
 
     full_name = time_work['full_name']
-    await message.answer(
-        text=f'Ваше новое имя {full_name}\nДля обновления текста нажмите /rotw'
-    )
+    text = f'Ваше новое имя {full_name}\nДля обновления текста нажмите /rotw'
+    await message.answer(text)
 
 
 async def set_start_work(message: Message, state: FSMContext):
@@ -483,8 +482,7 @@ async def set_time_stamp(
         )
 
         time_work['datetime_stamp_start'] = datetime.datetime.strptime(
-            datetime_stamp,
-            '%d.%m.%Y %H:%M:%S')
+            datetime_stamp, '%d.%m.%Y %H:%M:%S')
         flag_approve_write = True
         time_work['flag_lock_start'] = True
 
@@ -519,8 +517,7 @@ async def set_time_stamp(
         )
 
         time_work['datetime_stamp_end'] = datetime.datetime.strptime(
-            datetime_stamp,
-            '%d.%m.%Y %H:%M:%S')
+            datetime_stamp, '%d.%m.%Y %H:%M:%S')
         time_work['delta_time'] = (
                 time_work['datetime_stamp_end'] -
                 time_work['datetime_stamp_start']
