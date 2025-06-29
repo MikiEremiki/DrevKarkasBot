@@ -377,7 +377,7 @@ async def write_choice(callback: CallbackQuery, state: FSMContext):
 
     await state.update_data(time_work=time_work)
 
-    await set_time_stamp(callback.message, state, callback)
+    await set_time_stamp(callback.message, state)
 
 
 async def set_my_name(message: Message, state: FSMContext):
@@ -447,8 +447,10 @@ async def set_end_work(message: Message, state: FSMContext):
         )
 
 
-async def set_time_stamp(message: Message, state: FSMContext,
-                         callback: CallbackQuery = None):
+async def set_time_stamp(
+        message: Message,
+        state: FSMContext,
+):
     data = await state.get_data()
     time_work = data.get('time_work', {})
 
