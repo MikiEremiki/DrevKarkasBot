@@ -1,8 +1,10 @@
 [project]
 name = "drevkarkasbot"
 version = "0.1.0"
-description = "Add your description here"
+description = ""
 requires-python = ">=3.13"
 dependencies = [
-    "pytz>=2025.2",
+    "aiogram>=3.20.0.post0",
+    "apscheduler>=3.11.0",
+    "gspread-asyncio>=2.0.0",
 ]
