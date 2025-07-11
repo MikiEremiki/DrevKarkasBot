@@ -30,12 +30,14 @@ async def balance_of_accountable_funds_report():
     if not values:
         print('No data found.')
         return
+    first_index = values[0].index('ФП')
 
-    list_name_for_report = get_list_items_in_file(PATH_LIST_NAME_FOR_REPORT)
+    list_id_for_report = get_list_items_in_file(PATH_LIST_NAME_FOR_REPORT)
 
-    list_for_report = [list_name_for_report, []]
-    for name in list_for_report[0]:
-        list_for_report[1].append(values[1][values[0].index(name)])
+    list_for_report = [[], []]
+    for index in list_id_for_report:
+        list_for_report[0].append(values[0][int(index)+first_index])
+        list_for_report[1].append(values[1][int(index)+first_index])
     return list_for_report
 
 
