@@ -151,8 +151,7 @@ async def notify_assignees_evening(bot: Bot):
                             PATH_LIST_MESSAGE_FOR_DELETE_IN_FACTORY_CHAT)
 
 
-async def configure_report_of_balances(
-        message: Message, state: FSMContext):
+async def configure_report_of_balances(message: Message, state: FSMContext):
     if message.chat.id not in [CHAT_ID_SUPPLY, CHAT_ID_MIKIEREMIKI]:
         await message.answer('У вас нет прав для просмотра данной информации')
     else:
@@ -209,8 +208,8 @@ async def help_command(message: Message):
     )
 
 
-async def delete_message_after_delay(bot: Bot, context_data: Dict,
-                                     delay: int = 3):
+async def delete_message_after_delay(
+        bot: Bot, context_data: Dict, delay: int = 3):
     """Delete a message after a specified delay in seconds"""
     await asyncio.sleep(delay)
     try:
@@ -256,7 +255,7 @@ async def nice_rest(bot: Bot):
         '#СтаранияОкупились\n'
     )
     await bot.send_message(
-        chat_id=CHAT_ID_MIKIEREMIKI,
+        chat_id=CHAT_ID_GENERAL,
         text=text
     )
 

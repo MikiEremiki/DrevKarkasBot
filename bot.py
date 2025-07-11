@@ -48,19 +48,19 @@ async def main():
 
     scheduler = AsyncIOScheduler(timezone=timezone('Europe/Moscow'))
 
-    dp.message.register(start, Command(commands=['start']))
-    dp.message.register(echo, Command(commands=['echo']))
-    dp.message.register(help_command, Command(commands=['help']))
+    dp.message.register(start, Command('start'))
+    dp.message.register(echo, Command('echo'))
+    dp.message.register(help_command, Command('help'))
     dp.message.register(report_of_balances,
-                        Command(commands=['report_of_balances']))
+                        Command('report_of_balances'))
     dp.message.register(report_of_warehouse,
-                        Command(commands=['report_of_warehouse']))
+                        Command('report_of_warehouse'))
 
-    dp.message.register(report_of_time_work, Command(commands=['rotw']))
-    dp.message.register(set_my_name, Command(commands=['set_my_name']))
-    dp.message.register(set_start_work, Command(commands=['set_start_work']))
-    dp.message.register(set_end_work, Command(commands=['set_end_work']))
-    dp.message.register(reset_time_work, Command(commands=['reset_time_work']))
+    dp.message.register(report_of_time_work, Command('rotw'))
+    dp.message.register(set_my_name, Command('set_my_name'))
+    dp.message.register(set_start_work, Command('set_start_work'))
+    dp.message.register(set_end_work, Command('set_end_work'))
+    dp.message.register(reset_time_work, Command('reset_time_work'))
 
     dp.callback_query.register(write_choice, F.data.in_(['Приход', 'Уход']))
 

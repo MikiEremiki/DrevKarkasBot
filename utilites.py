@@ -73,13 +73,6 @@ def get_list_items_in_file(path):
     return list_items
 
 
-async def delete_message_for_job_in_callback(bot: Bot, data: dict):
-    await bot.delete_message(
-        chat_id=data['chat_id'],
-        message_id=data['message_id']
-    )
-
-
 def check_path(path):
     current_path = os.getcwd()
     path = os.path.join(current_path, path)
