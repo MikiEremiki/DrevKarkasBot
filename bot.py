@@ -3,12 +3,6 @@ import asyncio
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 from aiogram.enums import ParseMode
-from aiogram.types import (
-    BotCommand,
-    BotCommandScopeDefault,
-    BotCommandScopeChat,
-    BotCommandScopeAllPrivateChats
-)
 from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -38,6 +32,7 @@ from handlers import (
     ConfigReportStates,
 )
 from googlesheets import agcm
+from utl_commands_setup import setup_commands
 
 
 async def main():
@@ -46,15 +41,7 @@ async def main():
 
     bot = Bot(token=API_TOKEN,
               default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    await bot.delete_my_commands(BotCommandScopeDefault())
-    await bot.delete_my_commands(BotCommandScopeAllPrivateChats())
-    await bot.delete_my_commands(BotCommandScopeChat(chat_id=454342281))
-    await bot.delete_my_commands(BotCommandScopeChat(chat_id=5477576195))
-    await bot.set_my_commands([
-        BotCommand(command='start', description='Старт/Перезапуск бота'),
-    ],
-        scope=BotCommandScopeDefault()
-    )
+    await setup_commands(bot)
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage, agcm=agcm)
 
