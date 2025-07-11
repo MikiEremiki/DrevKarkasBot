@@ -5,10 +5,15 @@ from aiogram.filters import Command
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram_dialog import setup_dialogs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pytz import timezone
 
 from log.logging_config import load_log_config
+from report_balance_config_dialog import (
+    configure_report_of_balances,
+    report_config_dialog
+)
 from settings import API_TOKEN
 from utilites import echo
 from handlers import (
@@ -17,9 +22,6 @@ from handlers import (
     notify_assignees_morning,
     report_of_balances,
     report_of_warehouse,
-    configure_report_of_balances,
-    generate_list_of_names,
-    end_configure_report_of_balances,
     help_command,
     good_day,
     nice_rest,
@@ -29,7 +31,6 @@ from handlers import (
     set_start_work,
     set_end_work,
     reset_time_work,
-    ConfigReportStates,
 )
 from googlesheets import agcm
 from utl_commands_setup import setup_commands
@@ -55,14 +56,6 @@ async def main():
     dp.message.register(report_of_warehouse,
                         Command(commands=['report_of_warehouse']))
 
-    dp.message.register(configure_report_of_balances,
-                        Command(commands=['config_rep_of_bal']))
-    dp.callback_query.register(end_configure_report_of_balances,
-                               F.data == 'Закрыть',
-                               ConfigReportStates.waiting_for_selection)
-    dp.callback_query.register(generate_list_of_names,
-                               ConfigReportStates.waiting_for_selection)
-
     dp.message.register(report_of_time_work, Command(commands=['rotw']))
     dp.message.register(set_my_name, Command(commands=['set_my_name']))
     dp.message.register(set_start_work, Command(commands=['set_start_work']))
@@ -70,6 +63,10 @@ async def main():
     dp.message.register(reset_time_work, Command(commands=['reset_time_work']))
 
     dp.callback_query.register(write_choice, F.data.in_(['Приход', 'Уход']))
+
+    dp.message.register(configure_report_of_balances, Command("config_rep_of_bal"))
+    dp.include_router(report_config_dialog)
+    setup_dialogs(dp)
 
     scheduler.add_job(
         notify_assignees_morning, 'cron', args=[bot], hour=9, minute=0)
